@@ -9,6 +9,7 @@
 //
 
 import Foundation
+import Crypto
 
 import AoC
 import Common
@@ -16,8 +17,25 @@ import Common
 @main
 struct Day04: Puzzle {
     typealias Input = String
-    typealias OutputPartOne = Never
-    typealias OutputPartTwo = Never
+    typealias OutputPartOne = Int
+    typealias OutputPartTwo = Int
+
+    static func rawInput() async throws -> String {
+        "iwrupvqb"
+    }
+
+    static func findValue(_ maximal: UInt8, input: String) throws -> Int {
+        for value in 1...9999999 {
+            var algo = Insecure.MD5()
+            algo.update(data: "\(input)\(value)".data(using: .utf8).unsafelyUnwrapped)
+            let hash = algo.finalize()
+            let prefix = hash.withUnsafeBytes({ Array($0.prefix(3)) })
+            if prefix[0] == 0 && prefix[1] == 0 && prefix[2] <= maximal {
+                return value
+            }
+        }
+        throw ExecutionError.notSolved
+    }
 }
 
 // MARK: - PART 1
@@ -25,27 +43,20 @@ struct Day04: Puzzle {
 extension Day04 {
     static var partOneExpectations: [any Expectation<Input, OutputPartOne>] {
         [
-            // TODO: add expectations for part 1
+            assert(expectation: 609043, from: "abcdef"),
+            assert(expectation: 1048970, from: "pqrstuv"),
         ]
     }
 
     static func solvePartOne(_ input: Input) async throws -> OutputPartOne {
-        // TODO: Solve part 1 :)
-        throw ExecutionError.notSolved
+        try findValue(15, input: input) // 15 is 0x09
     }
 }
 
 // MARK: - PART 2
 
 extension Day04 {
-    static var partTwoExpectations: [any Expectation<Input, OutputPartTwo>] {
-        [
-            // TODO: add expectations for part 2
-        ]
-    }
-
     static func solvePartTwo(_ input: Input) async throws -> OutputPartTwo {
-        // TODO: Solve part 2 :)
-        throw ExecutionError.notSolved
+        try findValue(0, input: input) // 0 is 0x00
     }
 }

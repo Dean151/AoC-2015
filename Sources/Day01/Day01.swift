@@ -15,10 +15,9 @@ import Common
 
 @main
 struct Day01: Puzzle {
-    // TODO: Start by defining your input/output types :)
     typealias Input = String
-    typealias OutputPartOne = Never
-    typealias OutputPartTwo = Never
+    typealias OutputPartOne = Int
+    typealias OutputPartTwo = Int
 }
 
 // MARK: - PART 1
@@ -26,13 +25,29 @@ struct Day01: Puzzle {
 extension Day01 {
     static var partOneExpectations: [any Expectation<Input, OutputPartOne>] {
         [
-            // TODO: add expectations for part 1
+            assert(expectation: 0, from: "(())"),
+            assert(expectation: 0, from: "()()"),
+            assert(expectation: 3, from: "((("),
+            assert(expectation: 3, from: "(()(()("),
+            assert(expectation: 3, from: "))((((("),
+            assert(expectation: -1, from: "())"),
+            assert(expectation: -1, from: "))("),
+            assert(expectation: -3, from: ")))"),
+            assert(expectation: -3, from: ")())())"),
         ]
     }
 
     static func solvePartOne(_ input: Input) async throws -> OutputPartOne {
-        // TODO: Solve part 1 :)
-        throw ExecutionError.notSolved
+        try input.reduce(0) {
+            switch $1 {
+            case "(":
+                return $0 + 1
+            case ")":
+                return $0 - 1
+            default:
+                throw InputError.unexpectedInput
+            }
+        }
     }
 }
 
@@ -41,12 +56,28 @@ extension Day01 {
 extension Day01 {
     static var partTwoExpectations: [any Expectation<Input, OutputPartTwo>] {
         [
-            // TODO: add expectations for part 2
+            assert(expectation: 1, from: ")"),
+            assert(expectation: 5, from: "()())"),
+            assert(expectation: 1, from: ")()()()"),
+            assert(expectation: 5, from: "()())()()()()"),
         ]
     }
 
     static func solvePartTwo(_ input: Input) async throws -> OutputPartTwo {
-        // TODO: Solve part 2 :)
-        throw ExecutionError.notSolved
+        var level = 0
+        for (index, char) in input.enumerated() {
+            switch char {
+            case "(":
+                level += 1
+            case ")":
+                level -= 1
+            default:
+                throw InputError.unexpectedInput
+            }
+            if level == -1 {
+                return index + 1
+            }
+        }
+        throw ExecutionError.unsolvable
     }
 }

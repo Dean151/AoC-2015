@@ -13,11 +13,33 @@ import Foundation
 import AoC
 import Common
 
+struct Box: Parsable {
+    let small: Int
+    let middle: Int
+    let large: Int
+
+    static func parse(raw: String) throws -> Box {
+        let components = raw.components(separatedBy: "x").compactMap({ Int($0) }).sorted()
+        guard components.count == 3 else {
+            throw InputError.unexpectedInput
+        }
+        return .init(small: components[0], middle: components[1], large: components[2])
+    }
+
+    var paperArea: Int {
+        3*small*middle + 2*small*large + 2*middle*large
+    }
+
+    var ribbonLength: Int {
+        2*small + 2*middle + small*middle*large
+    }
+}
+
 @main
 struct Day02: Puzzle {
-    typealias Input = String
-    typealias OutputPartOne = Never
-    typealias OutputPartTwo = Never
+    typealias Input = [Box]
+    typealias OutputPartOne = Int
+    typealias OutputPartTwo = Int
 }
 
 // MARK: - PART 1
@@ -25,13 +47,14 @@ struct Day02: Puzzle {
 extension Day02 {
     static var partOneExpectations: [any Expectation<Input, OutputPartOne>] {
         [
-            // TODO: add expectations for part 1
+            assert(expectation: 58, fromRaw: "2x3x4"),
+            assert(expectation: 43, fromRaw: "1x1x10"),
+            assert(expectation: 101, fromRaw: "2x3x4\n1x1x10"),
         ]
     }
 
     static func solvePartOne(_ input: Input) async throws -> OutputPartOne {
-        // TODO: Solve part 1 :)
-        throw ExecutionError.notSolved
+        input.reduce(0, { $0 + $1.paperArea })
     }
 }
 
@@ -40,12 +63,13 @@ extension Day02 {
 extension Day02 {
     static var partTwoExpectations: [any Expectation<Input, OutputPartTwo>] {
         [
-            // TODO: add expectations for part 2
+            assert(expectation: 34, fromRaw: "2x3x4"),
+            assert(expectation: 14, fromRaw: "1x1x10"),
+            assert(expectation: 48, fromRaw: "2x3x4\n1x1x10"),
         ]
     }
 
     static func solvePartTwo(_ input: Input) async throws -> OutputPartTwo {
-        // TODO: Solve part 2 :)
-        throw ExecutionError.notSolved
+        input.reduce(0, { $0 + $1.ribbonLength })
     }
 }
